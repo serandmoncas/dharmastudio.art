@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dharma Studio — CDMX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bone:       #e8e3d8;
+  --bone-dim:   #a8a195;
+  --ink:        #0a0908;
+  --ink2:       #15120f;
+  --blood:      #7a1018;
+  --blood-glow: #a8252e;
+  --rule:       rgba(232, 227, 216, 0.18);
+  --serif:      'Cormorant Garamond', 'EB Garamond', Didot, 'Times New Roman', serif;
+  --mono:       'JetBrains Mono', 'Courier New', monospace;
+  --sans:       'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--sans);
+  cursor: none;
+  overflow-x: hidden;
+}
+
+/* ── Custom cursor ────────────────────────────── */
+#cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--blood);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.15s, height 0.15s, border-color 0.15s, opacity 0.2s;
+  mix-blend-mode: difference;
+}
+#cursor::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--blood);
+}
+#cursor.hidden { opacity: 0; }
+#cursor.hover  { width: 44px; height: 44px; border-color: var(--bone); }
+
+/* ── Film grain ───────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.45;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.92  0 0 0 0 0.89  0 0 0 0 0.82  0 0 0 0.14 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ── Utility ──────────────────────────────────── */
+.small-cap {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--bone-dim);
+}
+.rule { border: none; border-top: 1px solid var(--rule); }
+
+/* ── Scroll reveal ────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+a, button { cursor: none; }
+
+/* ════════════════════════════════════════════════
+   NAV
+════════════════════════════════════════════════ */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  padding: 28px 60px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  border-bottom: 1px solid var(--rule);
+  background: rgba(10,9,8,0.92);
+  backdrop-filter: blur(12px);
+}
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a {
+  font-family: var(--sans); font-size: 10px; letter-spacing: 0.32em;
+  text-transform: uppercase; font-weight: 500; color: var(--bone-dim);
+  text-decoration: none; transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--bone); }
+.nav-links .cta { color: var(--blood) !important; }
+.nav-brand { display: flex; align-items: center; gap: 12px; font-family: var(--serif); font-size: 26px; letter-spacing: 0.18em; font-weight: 500; }
+.nav-right  { justify-content: flex-end; }
+
+/* ════════════════════════════════════════════════
+   HERO
+════════════════════════════════════════════════ */
+.hero { position: relative; padding: 80px 60px 100px; text-align: center; overflow: hidden; }
+.hero-eyebrow { font-family: var(--sans); font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase; font-weight: 500; color: var(--bone-dim); }
+.hero-t1 { font-family: var(--serif); font-size: clamp(100px,15vw,220px); line-height: 0.88; letter-spacing: -0.04em; font-weight: 400; margin-top: 40px; }
+.hero-t2 { font-family: var(--serif); font-size: clamp(100px,15vw,220px); line-height: 0.88; letter-spacing: -0.04em; font-weight: 400; font-style: italic; color: var(--blood); margin: -20px 0 -40px; }
+.hero-skull-wrap  { display: flex; justify-content: center; margin: 60px 0 40px; position: relative; }
+.hero-skull-bg    { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; pointer-events: none; }
+.hero-subtitle    { font-family: var(--serif); font-style: italic; font-size: 22px; max-width: 620px; margin: 0 auto; line-height: 1.6; color: var(--bone-dim); }
+.hero-ctas        { display: flex; justify-content: center; gap: 16px; margin-top: 56px; }
+
+.btn-primary  { font-family: var(--sans); font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; background: var(--blood); color: var(--bone); border: none; padding: 20px 36px; font-weight: 600; transition: background 0.25s; }
+.btn-primary:hover { background: var(--blood-glow); }
+.btn-secondary { font-family: var(--sans); font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; background: transparent; color: var(--bone); border: 1px solid var(--bone); padding: 20px 36px; font-weight: 500; transition: background 0.25s, color 0.25s; }
+.btn-secondary:hover { background: var(--bone); color: var(--ink); }
+
+.marquee-wrap  { margin-top: 96px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 22px 0; overflow: hidden; }
+.marquee-track { display: flex; gap: 60px; white-space: nowrap; font-family: var(--serif); font-style: italic; font-size: 28px; color: var(--bone-dim); animation: marquee 32s linear infinite; width: max-content; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ════════════════════════════════════════════════
+   MANIFESTO
+════════════════════════════════════════════════ */
+.manifesto      { padding: 120px 60px; border-top: 1px solid var(--rule); }
+.manifesto-grid { display: grid; grid-template-columns: 200px 1fr 200px; gap: 60px; align-items: start; }
+.marginalia     { font-family: var(--serif); font-style: italic; font-size: 13px; line-height: 1.5; color: var(--bone-dim); opacity: 0.7; max-width: 180px; }
+.marginalia-l   { border-right: 1px solid var(--rule); padding-right: 14px; text-align: right; }
+.marginalia-r   { border-left: 1px solid var(--rule); padding-left: 14px; }
+.section-label  { color: var(--blood) !important; }
+.manifesto-h    { font-family: var(--serif); font-size: clamp(32px,4vw,56px); line-height: 1.12; font-weight: 400; margin-top: 24px; }
+.manifesto-cols { font-family: var(--serif); font-size: 16px; line-height: 1.75; column-count: 2; column-gap: 40px; color: var(--bone-dim); }
+.manifesto-cols p { margin-top: 0; }
+.manifesto-cols p + p { margin-top: 1em; }
+
+/* ════════════════════════════════════════════════
+   DISCIPLINAS
+════════════════════════════════════════════════ */
+.disciplinas    { padding: 120px 60px; border-top: 1px solid var(--rule); }
+.section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 60px; }
+.section-h      { font-family: var(--serif); font-size: clamp(52px,6vw,88px); line-height: 1; margin-top: 16px; font-weight: 400; }
+.section-note   { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--bone-dim); max-width: 320px; text-align: right; }
+.service-row    { display: grid; grid-template-columns: 80px 1fr 220px 180px; gap: 32px; padding: 36px 0; border-top: 1px solid var(--rule); align-items: baseline; transition: background 0.2s; }
+.service-row:hover { background: rgba(232,227,216,0.02); }
+.svc-roman      { font-family: var(--serif); font-size: 36px; font-style: italic; color: var(--blood); font-weight: 400; }
+.svc-name       { font-family: var(--serif); font-size: clamp(28px,3vw,44px); line-height: 1; font-weight: 400; }
+.svc-en         { font-family: var(--serif); font-size: 16px; font-style: italic; color: var(--bone-dim); margin-top: 8px; }
+.svc-desc       { font-family: var(--serif); font-size: 14px; line-height: 1.55; color: var(--bone-dim); font-style: italic; }
+.svc-price      { text-align: right; }
+.svc-price-val  { font-family: var(--serif); font-size: 22px; }
+
+/* ════════════════════════════════════════════════
+   GALERÍA
+════════════════════════════════════════════════ */
+.galeria        { padding: 120px 60px; border-top: 1px solid var(--rule); }
+.galeria-intro  { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: end; margin-bottom: 60px; }
+.galeria-note   { font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--bone-dim); text-align: right; }
+.gallery-grid   { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; }
+.gallery-cell   { position: relative; background: var(--ink2); display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--rule); overflow: hidden; transition: background 0.3s; }
+.gallery-cell:hover { background: #1a1510; }
+.gallery-meta   { position: absolute; bottom: 16px; left: 16px; right: 16px; }
+.gallery-title  { font-family: var(--serif); font-size: 22px; }
+.gallery-num    { position: absolute; top: 16px; right: 16px; font-family: var(--mono); font-size: 10px; color: var(--bone-dim); letter-spacing: 1px; }
+
+/* ════════════════════════════════════════════════
+   SOBRE
+════════════════════════════════════════════════ */
+.sobre          { padding: 140px 60px; border-top: 1px solid var(--rule); }
+.sobre-grid     { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.sobre-portrait { aspect-ratio: 3/4; background: var(--ink2); position: relative; display: flex; align-items: center; justify-content: center; border: 1px solid var(--rule); }
+.portrait-tl    { position: absolute; top: 20px; left: 20px; font-family: var(--mono); font-size: 10px; color: var(--bone-dim); letter-spacing: 1px; }
+.portrait-br    { position: absolute; bottom: 20px; right: 20px; font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--bone-dim); }
+.sobre-h        { font-family: var(--serif); font-size: clamp(44px,5.5vw,76px); line-height: 1.02; margin-top: 16px; }
+.sobre-text     { font-family: var(--serif); font-size: 17px; line-height: 1.7; color: var(--bone-dim); margin-top: 32px; }
+.sobre-text p+p { margin-top: 20px; }
+.sobre-stats    { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; margin-top: 48px; }
+.stat-num       { font-family: var(--serif); font-size: 56px; color: var(--blood); line-height: 1; }
+
+/* ════════════════════════════════════════════════
+   RESERVAS
+════════════════════════════════════════════════ */
+.reservas       { padding: 140px 60px; border-top: 1px solid var(--rule); background: var(--ink2); }
+.reservas-grid  { display: grid; grid-template-columns: 1fr 480px; gap: 80px; }
+.reservas-h     { font-family: var(--serif); font-size: clamp(60px,7vw,96px); line-height: 1; margin-top: 24px; }
+.reservas-note  { font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--bone-dim); margin-top: 24px; max-width: 520px; }
+.process-step   { display: grid; grid-template-columns: 50px 220px 1fr; gap: 32px; padding: 32px 0; border-top: 1px solid var(--rule); align-items: baseline; }
+.step-n         { font-family: var(--serif); font-style: italic; font-size: 28px; color: var(--blood); }
+.step-title     { font-family: var(--serif); font-size: 36px; line-height: 1; }
+.step-en        { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--bone-dim); margin-top: 4px; }
+.step-desc      { font-family: var(--serif); font-size: 15px; line-height: 1.6; color: var(--bone-dim); }
+
+.booking-card   { border: 1px solid var(--rule); padding: 40px; background: var(--ink); align-self: start; position: sticky; top: 80px; }
+.booking-title  { font-family: var(--serif); font-size: 32px; line-height: 1.15; text-align: center; margin-bottom: 32px; }
+.form-field     { margin-bottom: 20px; }
+.form-label     { display: block; margin-bottom: 8px; }
+.form-control   { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--rule); height: 28px; font-family: var(--serif); font-style: italic; color: var(--bone-dim); font-size: 14px; padding-bottom: 6px; outline: none; transition: border-color 0.2s; }
+.form-control:focus { border-bottom-color: var(--blood); }
+textarea.form-control { height: 80px; resize: none; }
+.form-submit    { width: 100%; margin-top: 16px; padding: 20px 0; background: var(--blood); color: var(--bone); border: none; font-family: var(--sans); font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 600; transition: background 0.25s; }
+.form-submit:hover { background: var(--blood-glow); }
+.form-note      { font-family: var(--serif); font-style: italic; font-size: 12px; color: var(--bone-dim); text-align: center; margin-top: 16px; }
+
+/* ════════════════════════════════════════════════
+   DIARIO
+════════════════════════════════════════════════ */
+.diario         { padding: 120px 60px; border-top: 1px solid var(--rule); }
+.diario-header  { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 56px; }
+.diario-grid    { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 40px; }
+.article        { border-top: 1px solid var(--bone); padding-top: 24px; }
+.article-thumb  { background: var(--ink2); aspect-ratio: 4/3; margin-bottom: 24px; position: relative; display: flex; align-items: center; justify-content: center; border: 1px solid var(--rule); overflow: hidden; }
+.article-meta   { display: flex; justify-content: space-between; margin-bottom: 16px; }
+.article-cat    { color: var(--blood) !important; }
+.article-h      { font-family: var(--serif); line-height: 1.1; font-weight: 400; margin: 0; }
+.article-hero .article-h  { font-size: 44px; }
+.article-small .article-h { font-size: 26px; }
+.article-body   { font-family: var(--serif); line-height: 1.6; color: var(--bone-dim); margin-top: 16px; }
+.article-hero .article-body  { font-size: 17px; }
+.article-small .article-body { font-size: 14px; font-style: italic; }
+.article-read   { font-family: var(--sans); font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase; font-weight: 500; color: var(--bone); display: inline-block; margin-top: 20px; text-decoration: none; }
+
+/* ════════════════════════════════════════════════
+   CONTACTO + MAPA
+════════════════════════════════════════════════ */
+.contacto       { border-top: 1px solid var(--rule); display: grid; grid-template-columns: 1fr 1fr; }
+.contacto-info  { padding: 120px 60px; }
+.contacto-h     { font-family: var(--serif); font-size: clamp(60px,7vw,96px); line-height: 1; margin-top: 24px; }
+.contacto-dtls  { margin-top: 56px; display: grid; gap: 32px; }
+.detail-lbl     { display: block; margin-bottom: 8px; }
+.detail-val     { font-family: var(--serif); font-size: 22px; }
+
+.mapa {
+  background: #050405; position: relative; min-height: 600px;
+  background-image: linear-gradient(var(--rule) 1px,transparent 1px), linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+  background-size: 60px 60px; overflow: hidden;
+}
+.mapa-svg    { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mapa-pin    { position: absolute; top: 38%; left: 52%; transform: translate(-50%,-50%); }
+.pin-ring    { width: 80px; height: 80px; border-radius: 50%; border: 1px solid var(--blood); display: flex; align-items: center; justify-content: center; animation: pulse 2s ease-in-out infinite; }
+.pin-dot     { width: 14px; height: 14px; border-radius: 50%; background: var(--blood); }
+.pin-label   { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--bone); white-space: nowrap; margin-top: 16px; }
+.mapa-coords { position: absolute; bottom: 20px; right: 20px; font-family: var(--mono); font-size: 10px; color: var(--bone-dim); letter-spacing: 1px; }
+@keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.15);opacity:0.7} }
+
+/* ════════════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════════════ */
+footer        { padding: 80px 60px 60px; border-top: 1px solid var(--rule); background: #050405; }
+.footer-mark  { display: flex; justify-content: center; margin-bottom: 60px; overflow: hidden; }
+.footer-word  { font-family: var(--serif); font-size: clamp(80px,12vw,180px); font-weight: 400; letter-spacing: -0.04em; line-height: 0.9; white-space: nowrap; }
+.footer-cols  { display: grid; grid-template-columns: repeat(5,1fr); gap: 32px; padding-top: 40px; border-top: 1px solid var(--rule); }
+.footer-ct    { display: block; margin-bottom: 16px; }
+.footer-lnk   { font-family: var(--serif); font-size: 15px; color: var(--bone); padding: 4px 0; display: block; text-decoration: none; transition: color 0.2s; }
+.footer-lnk:hover { color: var(--bone-dim); }
+.footer-nl    { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--bone-dim); margin-bottom: 16px; }
+.footer-nli   { border-bottom: 1px solid var(--bone); padding-bottom: 8px; display: flex; justify-content: space-between; }
+.footer-nli span { font-family: var(--serif); font-style: italic; color: var(--bone-dim); font-size: 14px; }
+.footer-bot   { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--rule); }
+
+/* ════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  nav { padding: 20px 24px; }
+  .nav-links { display: none; }
+  .hero, .manifesto, .disciplinas, .galeria, .sobre, .reservas, .diario, .contacto-info { padding: 60px 24px; }
+  .manifesto-grid  { grid-template-columns: 1fr; }
+  .marginalia      { display: none; }
+  .service-row     { grid-template-columns: 60px 1fr; }
+  .svc-desc, .svc-price { display: none; }
+  .gallery-grid    { grid-template-columns: repeat(2,1fr); }
+  .galeria-intro, .sobre-grid, .reservas-grid, .diario-grid, .contacto { grid-template-columns: 1fr; }
+  .booking-card    { position: static; }
+  .footer-cols     { grid-template-columns: repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- NAV ─────────────────────────────────────── -->
+<nav>
+  <ul class="nav-links">
+    <li><a href="#manifesto">Casa</a></li>
+    <li><a href="#galeria">Obra</a></li>
+    <li><a href="#disciplinas">Disciplinas</a></li>
+    <li><a href="#diario">Diario</a></li>
+  </ul>
+  <div class="nav-brand">
+    <span id="wheel-l"></span>
+    DHARMA
+    <span id="wheel-r"></span>
+  </div>
+  <ul class="nav-links nav-right">
+    <li><a href="#">ES / EN</a></li>
+    <li><a href="#sobre">Manifiesto</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+    <li><a href="#reservas" class="cta">Reservar ↗</a></li>
+  </ul>
+</nav>
+
+<!-- HERO ────────────────────────────────────── -->
+<section class="hero">
+  <p class="hero-eyebrow reveal">Est. MMXVI · Calle de los Olvidados · CDMX</p>
+  <div class="hero-t1 reveal">el cuerpo</div>
+  <div class="hero-t2 reveal">es templo.</div>
+
+  <div class="hero-skull-wrap reveal">
+    <div class="hero-skull-bg"><span id="hero-flower"></span></div>
+    <span id="hero-skull"></span>
+  </div>
+
+  <p class="hero-subtitle reveal">
+    The body is a reliquary. We carve memory into skin —<br>
+    devotional ink, slow needles, sacred geometry.
+  </p>
+
+  <div class="hero-ctas reveal">
+    <button class="btn-primary" onclick="document.getElementById('reservas').scrollIntoView({behavior:'smooth'})">Reservar consulta ↗</button>
+    <button class="btn-secondary" onclick="document.getElementById('galeria').scrollIntoView({behavior:'smooth'})">Ver portafolio</button>
+  </div>
+
+  <div class="marquee-wrap reveal">
+    <div class="marquee-track" id="marquee"></div>
+  </div>
+</section>
+
+<!-- MANIFIESTO ──────────────────────────────── -->
+<section class="manifesto" id="manifesto">
+  <div class="manifesto-grid">
+    <div class="marginalia marginalia-l reveal">
+      <em>Nota I.</em> Dharma — del sánscrito धर्म — aquello que sostiene.
+      La práctica del tatuaje como sostén de la memoria.
+    </div>
+
+    <div class="reveal">
+      <span class="small-cap section-label">§ Manifiesto · I</span>
+      <h2 class="manifesto-h">
+        No hacemos <em style="color:var(--blood)">tatuajes.</em> Hacemos
+        <em> reliquias.</em> Cada pieza es un voto silencioso,
+        una pequeña liturgia de la tinta y la piel.
+      </h2>
+      <hr class="rule" style="margin:48px 0">
+      <div class="manifesto-cols">
+        <p>Dharma Studio fue fundado en 2016 como un acto de resistencia contra la prisa.
+        Aquí no hay flash, ni walk-ins, ni mañanas ruidosas. Solo consultas largas,
+        cafés amargos, y un compromiso obsesivo con la línea.</p>
+        <p>Trabajamos en blackwork, linework fino, dotwork ceremonial y geometría sagrada.
+        Cada pieza inicia con una conversación — la tuya, no la nuestra. Tu cuerpo es
+        el manuscrito; nosotros somos copistas.</p>
+      </div>
+    </div>
+
+    <div class="marginalia marginalia-r reveal">
+      <em>Nota II.</em> Solo cuatro citas por semana. La paciencia es parte de la práctica.
+      Lista de espera: 6–8 semanas.
+    </div>
+  </div>
+</section>
+
+<!-- DISCIPLINAS ─────────────────────────────── -->
+<section class="disciplinas" id="disciplinas">
+  <div class="section-header reveal">
+    <div>
+      <span class="small-cap section-label">§ II · Disciplinas</span>
+      <h2 class="section-h">Las cinco <em style="color:var(--blood)">vías.</em></h2>
+    </div>
+    <p class="section-note">
+      <span id="skull-glyph"></span>
+      Five disciplines, one practice.<br>Consulta requerida para todas.
+    </p>
+  </div>
+  <div id="services"></div>
+  <hr class="rule">
+</section>
+
+<!-- GALERÍA ─────────────────────────────────── -->
+<section class="galeria" id="galeria">
+  <div class="galeria-intro reveal">
+    <div>
+      <span class="small-cap section-label">§ III · Obra reciente</span>
+      <h2 class="section-h">Selección, <em style="color:var(--blood)">2024–2026.</em></h2>
+    </div>
+    <div class="galeria-note">
+      Cuarenta y dos piezas.<br>Doce artistas. Un único compromiso con la línea.
+      <div style="margin-top:16px"><span class="small-cap">Ver archivo completo →</span></div>
+    </div>
+  </div>
+  <div class="gallery-grid" id="gallery"></div>
+</section>
+
+<!-- SOBRE ───────────────────────────────────── -->
+<section class="sobre" id="sobre">
+  <div class="sobre-grid">
+    <div class="sobre-portrait reveal">
+      <span class="portrait-tl">PL. I · ATELIER</span>
+      <span id="sobre-skull"></span>
+      <span class="portrait-br">fig. estudio interior</span>
+    </div>
+    <div class="reveal">
+      <span class="small-cap section-label">§ IV · Casa</span>
+      <h2 class="sobre-h">Diez <em style="color:var(--blood)">años</em> haciendo lo mismo, a propósito.</h2>
+      <div class="sobre-text">
+        <p>Dharma Studio existe desde 2016 en una casa porfiriana en la Roma Norte.
+        Cuatro habitaciones, doce artistas residentes, una biblioteca de referencia
+        que crece como musgo. Funcionamos por cita, en jornadas largas, sin música alta.</p>
+        <p>Creemos en el tatuaje como práctica devocional — más cerca de la copia
+        de un manuscrito iluminado que del consumo desechable. Cada artista
+        trabaja en una sola disciplina, durante muchos años, hasta volverse un instrumento limpio.</p>
+      </div>
+      <div class="sobre-stats">
+        <div><div class="stat-num">10</div><span class="small-cap">Años de oficio</span></div>
+        <div><div class="stat-num">12</div><span class="small-cap">Artistas residentes</span></div>
+        <div><div class="stat-num">4.2k</div><span class="small-cap">Reliquias entregadas</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESERVAS ────────────────────────────────── -->
+<section class="reservas" id="reservas">
+  <div class="reservas-grid">
+    <div>
+      <span class="small-cap section-label">§ V · Liturgia de la reserva</span>
+      <h2 class="reservas-h">Cómo se <em style="color:var(--blood)">reserva.</em></h2>
+      <p class="reservas-note">No tomamos walk-ins. Cada pieza inicia con una conversación. Aquí está el camino:</p>
+      <div id="steps"></div>
+      <hr class="rule">
+    </div>
+
+    <aside class="booking-card reveal">
+      <div style="display:flex;justify-content:center;margin-bottom:24px"><span id="booking-skull"></span></div>
+      <h3 class="booking-title">Solicitar consulta</h3>
+      <form onsubmit="return false">
+        <div class="form-field">
+          <span class="small-cap form-label">Nombre</span>
+          <input class="form-control" type="text" placeholder="María de la Luz">
+        </div>
+        <div class="form-field">
+          <span class="small-cap form-label">Correo electrónico</span>
+          <input class="form-control" type="email" placeholder="maria@ejemplo.com">
+        </div>
+        <div class="form-field">
+          <span class="small-cap form-label">Disciplina deseada</span>
+          <input class="form-control" type="text">
+        </div>
+        <div class="form-field">
+          <span class="small-cap form-label">Ubicación en el cuerpo</span>
+          <input class="form-control" type="text">
+        </div>
+        <div class="form-field">
+          <span class="small-cap form-label">Cuéntanos tu idea</span>
+          <textarea class="form-control"></textarea>
+        </div>
+        <button class="form-submit" type="submit">Enviar la carta ↗</button>
+      </form>
+      <p class="form-note">Respondemos en 3–5 días hábiles</p>
+    </aside>
+  </div>
+</section>
+
+<!-- DIARIO ──────────────────────────────────── -->
+<section class="diario" id="diario">
+  <div class="diario-header reveal">
+    <div>
+      <span class="small-cap section-label">§ VI · Diario</span>
+      <h2 class="section-h">Notas <em style="color:var(--blood)">del taller.</em></h2>
+    </div>
+    <span class="small-cap">Ver archivo →</span>
+  </div>
+  <div class="diario-grid" id="diario-grid"></div>
+</section>
+
+<!-- CONTACTO + MAPA ─────────────────────────── -->
+<section class="contacto" id="contacto">
+  <div class="contacto-info reveal">
+    <span class="small-cap section-label">§ VII · Ubicación</span>
+    <h2 class="contacto-h">Encuéntra<em style="color:var(--blood)">nos.</em></h2>
+    <div class="contacto-dtls">
+      <div>
+        <span class="small-cap detail-lbl" style="color:var(--bone-dim)">Dirección</span>
+        <div class="detail-val">Calle Tonalá 138, planta alta<br>Col. Roma Norte · CDMX 06700</div>
+      </div>
+      <div>
+        <span class="small-cap detail-lbl" style="color:var(--bone-dim)">Horario</span>
+        <div class="detail-val">Martes a sábado · 13:00 — 21:00<br><em style="color:var(--bone-dim)">Solo con cita previa</em></div>
+      </div>
+      <div>
+        <span class="small-cap detail-lbl" style="color:var(--bone-dim)">Contacto</span>
+        <div class="detail-val">
+          <div>cartas@dharmastudio.mx</div>
+          <div style="color:var(--bone-dim)">+52 55 4188 0921</div>
+          <div style="color:var(--bone-dim)">@dharma.studio.mx</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mapa">
+    <svg class="mapa-svg" viewBox="0 0 600 600" fill="none">
+      <path d="M0 200 Q200 240 400 200 T600 220" stroke="rgba(232,227,216,0.18)" stroke-width="2"/>
+      <path d="M0 380 Q300 360 600 400" stroke="rgba(232,227,216,0.18)" stroke-width="2"/>
+      <path d="M200 0 L240 600" stroke="rgba(232,227,216,0.18)" stroke-width="2"/>
+      <path d="M420 0 Q400 300 440 600" stroke="rgba(232,227,216,0.18)" stroke-width="2"/>
+      <path d="M0 480 L600 460" stroke="rgba(232,227,216,0.18)" stroke-width="1"/>
+    </svg>
+    <div class="mapa-pin">
+      <div class="pin-ring"><div class="pin-dot"></div></div>
+      <div class="pin-label">Tonalá 138 ↑</div>
+    </div>
+    <div class="mapa-coords">19.4185° N · 99.1623° O</div>
+  </div>
+</section>
+
+<!-- FOOTER ──────────────────────────────────── -->
+<footer>
+  <div class="footer-mark">
+    <div class="footer-word">D<em style="color:var(--blood)">harm</em>a</div>
+  </div>
+  <div class="footer-cols">
+    <div>
+      <span class="small-cap footer-ct" style="color:var(--bone-dim)">Casa</span>
+      <a class="footer-lnk" href="#">Manifiesto</a>
+      <a class="footer-lnk" href="#">Disciplinas</a>
+      <a class="footer-lnk" href="#">Obra</a>
+      <a class="footer-lnk" href="#">Equipo</a>
+      <a class="footer-lnk" href="#">Diario</a>
+    </div>
+    <div>
+      <span class="small-cap footer-ct" style="color:var(--bone-dim)">Cuidado</span>
+      <a class="footer-lnk" href="#">Antes del tatuaje</a>
+      <a class="footer-lnk" href="#">Curación</a>
+      <a class="footer-lnk" href="#">Touch-ups</a>
+      <a class="footer-lnk" href="#">Garantía</a>
+      <a class="footer-lnk" href="#">FAQ</a>
+    </div>
+    <div>
+      <span class="small-cap footer-ct" style="color:var(--bone-dim)">Legal</span>
+      <a class="footer-lnk" href="#">Privacidad</a>
+      <a class="footer-lnk" href="#">Términos</a>
+      <a class="footer-lnk" href="#">Cookies</a>
+      <a class="footer-lnk" href="#">Consentimiento</a>
+    </div>
+    <div>
+      <span class="small-cap footer-ct" style="color:var(--bone-dim)">Carta</span>
+      <p class="footer-nl">Una nota mensual desde el taller. Sin spam.</p>
+      <div class="footer-nli">
+        <span>tu correo</span>
+        <span>→</span>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <span class="small-cap footer-ct" style="color:var(--bone-dim)">Síguenos</span>
+      <a class="footer-lnk" href="#">Instagram ↗</a>
+      <a class="footer-lnk" href="#">TikTok ↗</a>
+      <a class="footer-lnk" href="#">Pinterest ↗</a>
+      <a class="footer-lnk" href="#">Are.na ↗</a>
+    </div>
+  </div>
+  <div class="footer-bot">
+    <span class="small-cap">© MMXXVI · Dharma Studio · CDMX</span>
+    <span class="small-cap" style="color:var(--bone-dim)">"Memento, homo, quia pulvis es"</span>
+    <span class="small-cap">Diseñado en CDMX · Hecho con paciencia</span>
+  </div>
+</footer>
+
+<script>
+'use strict';
+
+// ─── SVG helpers ──────────────────────────────────────────────────────────────
+const NS = 'http://www.w3.org/2000/svg';
+const TAU = Math.PI * 2;
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+function svg(vb, w, h, extra = {}) {
+  return el('svg', { viewBox: vb, width: w, height: h, fill: 'none', ...extra });
+}
+
+// ─── SkullFrontal ─────────────────────────────────────────────────────────────
+function skullFrontal(size = 200, color = '#e8e3d8', stroke = 1.2) {
+  const s = svg('0 0 200 240', size, size * 1.2, {
+    stroke: color, 'stroke-width': stroke, 'stroke-linejoin': 'round', 'stroke-linecap': 'round',
+  });
+  const a = (t, at) => el(t, at, s);
+  a('path', { d: 'M100 12 C58 12 28 44 28 92 C28 118 38 138 50 152 L52 178 C52 188 60 196 70 196 L82 196 L82 214 L92 214 L92 200 L108 200 L108 214 L118 214 L118 196 L130 196 C140 196 148 188 148 178 L150 152 C162 138 172 118 172 92 C172 44 142 12 100 12 Z' });
+  a('ellipse', { cx: 68, cy: 108, rx: 20, ry: 24, fill: color });
+  a('ellipse', { cx: 132, cy: 108, rx: 20, ry: 24, fill: color });
+  a('path', { d: 'M100 130 L92 158 L100 166 L108 158 Z', fill: color });
+  [[80,196],[90,200],[100,200],[110,200],[120,196]].forEach(([x,y2]) => a('line', { x1: x, y1: 178, x2: x, y2 }));
+  a('path', { d: 'M40 132 C32 138 30 148 36 156' });
+  a('path', { d: 'M160 132 C168 138 170 148 164 156' });
+  a('path', { d: 'M60 36 Q80 30 100 32 Q120 30 140 36', opacity: 0.6 });
+  a('circle', { cx: 100, cy: 72, r: 10, opacity: 0.7 });
+  a('line', { x1: 100, y1: 62, x2: 100, y2: 82, opacity: 0.7 });
+  a('line', { x1: 90, y1: 72, x2: 110, y2: 72, opacity: 0.7 });
+  a('line', { x1: 93, y1: 65, x2: 107, y2: 79, opacity: 0.7 });
+  a('line', { x1: 107, y1: 65, x2: 93, y2: 79, opacity: 0.7 });
+  return s;
+}
+
+// ─── SkullGlyph ───────────────────────────────────────────────────────────────
+function skullGlyph(size = 28, color = '#7a1018') {
+  const s = svg('0 0 40 48', size, size * 1.2, { fill: color });
+  el('path', { d: 'M20 2 C10 2 4 10 4 22 C4 28 6 32 9 35 L9 40 C9 42 11 44 13 44 L15 44 L15 47 L18 47 L18 44 L22 44 L22 47 L25 47 L25 44 L27 44 C29 44 31 42 31 40 L31 35 C34 32 36 28 36 22 C36 10 30 2 20 2 Z M13 22 A4 5 0 0 1 19 22 A4 5 0 0 1 13 22 M21 22 A4 5 0 0 1 27 22 A4 5 0 0 1 21 22 M20 28 L17 36 L20 38 L23 36 Z' }, s);
+  return s;
+}
+
+// ─── DharmaWheel ──────────────────────────────────────────────────────────────
+function dharmaWheel(size = 22, color = '#e8e3d8', stroke = 1.2) {
+  const s = svg('0 0 100 100', size, size, { stroke: color, 'stroke-width': stroke });
+  const a = (t, at) => el(t, at, s);
+  a('circle', { cx: 50, cy: 50, r: 46 });
+  a('circle', { cx: 50, cy: 50, r: 34 });
+  a('circle', { cx: 50, cy: 50, r: 8 });
+  for (let i = 0; i < 8; i++) {
+    const ang = (i / 8) * TAU;
+    a('line', { x1: 50 + Math.cos(ang)*8, y1: 50 + Math.sin(ang)*8, x2: 50 + Math.cos(ang)*34, y2: 50 + Math.sin(ang)*34 });
+  }
+  for (let i = 0; i < 8; i++) {
+    const ang = (i / 8) * TAU + Math.PI / 8;
+    a('line', { x1: 50 + Math.cos(ang)*34, y1: 50 + Math.sin(ang)*34, x2: 50 + Math.cos(ang)*46, y2: 50 + Math.sin(ang)*46, opacity: 0.5 });
+  }
+  return s;
+}
+
+// ─── FlowerOfLife ─────────────────────────────────────────────────────────────
+function flowerOfLife(size = 520, color = '#7a1018', stroke = 0.4, opacity = 0.18) {
+  const s = svg('0 0 200 200', size, size, { stroke: color, 'stroke-width': stroke, style: `opacity:${opacity}` });
+  const cx = 100, cy = 100, r = 22;
+  const seeds = [
+    [0,0],[r*2,0],[-r*2,0],[r,r*1.732],[-r,r*1.732],[r,-r*1.732],[-r,-r*1.732],
+    [r*3,r*1.732],[-r*3,r*1.732],[r*3,-r*1.732],[-r*3,-r*1.732],
+    [0,r*3.464],[0,-r*3.464],[r*2,r*3.464],[-r*2,r*3.464],[r*2,-r*3.464],[-r*2,-r*3.464],[r*4,0],[-r*4,0],
+  ];
+  el('circle', { cx, cy, r: r*4+4 }, s);
+  seeds.forEach(([dx,dy]) => el('circle', { cx: cx+dx, cy: cy+dy, r }, s));
+  return s;
+}
+
+// ─── Mandala ──────────────────────────────────────────────────────────────────
+function mandala(size = 180, color = '#e8e3d8', stroke = 0.4, opacity = 0.4) {
+  const s = svg('0 0 300 300', size, size, { stroke: color, 'stroke-width': stroke, style: `opacity:${opacity}` });
+  const cx = 150, cy = 150;
+  [40,70,100,130].forEach(r => el('circle', { cx, cy, r }, s));
+  for (let i = 0; i < 16; i++) {
+    const a = (i/16)*TAU;
+    el('line', { x1: cx, y1: cy, x2: cx + Math.cos(a)*140, y2: cy + Math.sin(a)*140 }, s);
+  }
+  for (let i = 0; i < 8; i++) {
+    const a = (i/8)*TAU;
+    const x = cx + Math.cos(a)*70, y = cy + Math.sin(a)*70;
+    const e = el('ellipse', { cx: x, cy: y, rx: 14, ry: 36 }, s);
+    e.setAttribute('transform', `rotate(${(i/8)*360+90} ${x} ${y})`);
+  }
+  for (let i = 0; i < 16; i++) {
+    const a = (i/16)*TAU + Math.PI/16;
+    const x = cx + Math.cos(a)*115, y = cy + Math.sin(a)*115;
+    const e = el('ellipse', { cx: x, cy: y, rx: 6, ry: 18 }, s);
+    e.setAttribute('transform', `rotate(${(i/16)*360+90+11.25} ${x} ${y})`);
+  }
+  return s;
+}
+
+// ─── EyeOfDharma ──────────────────────────────────────────────────────────────
+function eyeOfDharma(size = 140, color = '#e8e3d8', stroke = 1, opacity = 0.4) {
+  const s = svg('0 0 120 120', size, size, { stroke: color, 'stroke-width': stroke, style: `opacity:${opacity}` });
+  const a = (t, at) => el(t, at, s);
+  a('path', { d: 'M60 8 L114 100 L6 100 Z' });
+  a('path', { d: 'M22 80 Q60 50 98 80 Q60 110 22 80 Z', 'stroke-width': stroke*0.8 });
+  a('circle', { cx: 60, cy: 80, r: 9 });
+  a('circle', { cx: 60, cy: 80, r: 3.5, fill: color });
+  a('line', { x1: 60, y1: 100, x2: 60, y2: 116, 'stroke-width': stroke*0.5 });
+  return s;
+}
+
+// ─── Serpent ──────────────────────────────────────────────────────────────────
+function serpent(w = 180, h = 60, color = '#e8e3d8', stroke = 1, opacity = 0.4) {
+  const s = svg('0 0 200 60', w, h, { stroke: color, 'stroke-width': stroke, 'stroke-linecap': 'round', style: `opacity:${opacity}` });
+  const a = (t, at) => el(t, at, s);
+  a('path', { d: 'M4 30 Q 30 4, 56 30 T 108 30 T 160 30 Q 178 30 184 22 Q 192 14 188 6' });
+  a('path', { d: 'M188 6 L184 10 M188 6 L192 10', 'stroke-width': stroke*0.7 });
+  ['M14 30 Q20 25 26 30','M40 30 Q46 35 52 30','M66 30 Q72 25 78 30',
+   'M92 30 Q98 35 104 30','M118 30 Q124 25 130 30','M144 30 Q150 35 156 30'].forEach(d => a('path', { d, opacity: 0.5 }));
+  return s;
+}
+
+// ─── SkullAnatomical ──────────────────────────────────────────────────────────
+function skullAnatomical(size = 280, color = '#7a1018', glow = '#a8252e', opacity = 0.85) {
+  const s = svg('0 0 300 360', size, size*1.2, { style: `opacity:${opacity}` });
+
+  const defs = el('defs', {}, s);
+  const rg = el('radialGradient', { id: 'skGA', cx: '50%', cy: '40%', r: '60%' }, defs);
+  el('stop', { offset: '0%', 'stop-color': glow, 'stop-opacity': 0.4 }, rg);
+  el('stop', { offset: '100%', 'stop-color': glow, 'stop-opacity': 0 }, rg);
+  const lg = el('linearGradient', { id: 'bGA', x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+  el('stop', { offset: 0, 'stop-color': color, 'stop-opacity': 0.95 }, lg);
+  el('stop', { offset: 1, 'stop-color': color, 'stop-opacity': 0.5 }, lg);
+
+  const a = (t, at) => el(t, at, s);
+  a('circle', { cx: 150, cy: 160, r: 170, fill: 'url(#skGA)' });
+
+  const g = el('g', { stroke: color, 'stroke-width': 0.5, opacity: 0.35, fill: 'none' }, s);
+  [150,130,110].forEach(r => el('circle', { cx: 150, cy: 160, r }, g));
+  for (let i = 0; i < 24; i++) {
+    const ang = (i/24)*TAU;
+    el('line', { x1: 150, y1: 160, x2: 150+Math.cos(ang)*160, y2: 160+Math.sin(ang)*160 }, g);
+  }
+
+  a('path', {
+    d: 'M150 28 C100 28 68 60 64 110 C62 138 70 158 80 172 L82 210 C82 224 92 234 106 234 L114 234 L114 256 L128 256 L128 240 L148 240 L148 256 L160 256 L160 240 L176 240 L176 256 L190 256 L190 234 L196 234 C210 234 220 224 220 210 L222 172 C232 158 240 138 238 110 C234 60 200 28 150 28 Z',
+    fill: 'url(#bGA)', stroke: color, 'stroke-width': 1.4,
+  });
+  a('ellipse', { cx: 112, cy: 132, rx: 22, ry: 28, fill: '#0a0508' });
+  a('ellipse', { cx: 186, cy: 132, rx: 22, ry: 28, fill: '#0a0508' });
+  a('circle', { cx: 112, cy: 132, r: 4, fill: glow, opacity: 0.9 });
+  a('circle', { cx: 186, cy: 132, r: 4, fill: glow, opacity: 0.9 });
+  a('path', { d: 'M138 88 Q150 76 162 88 Q150 100 138 88 Z', fill: glow, opacity: 0.8 });
+  a('circle', { cx: 150, cy: 88, r: 3, fill: '#fff' });
+  a('path', { d: 'M150 158 L140 190 L150 200 L160 190 Z', fill: '#0a0508' });
+
+  const tg = el('g', { stroke: color, 'stroke-width': 1, fill: '#0a0508' }, s);
+  [[118,22],[130,24],[142,24],[154,24],[166,24],[178,22]].forEach(([x,h], i) =>
+    el('rect', { x, y: 210, width: 10, height: h }, tg));
+
+  a('path', { d: 'M80 60 Q120 40 150 48 Q180 40 220 60', stroke: color, 'stroke-width': 0.7, opacity: 0.6 });
+  a('path', { d: 'M150 28 L150 78', stroke: color, 'stroke-width': 0.7, opacity: 0.6 });
+  return s;
+}
+
+// ─── Populate: Nav wheels ─────────────────────────────────────────────────────
+document.getElementById('wheel-l').appendChild(dharmaWheel(22));
+document.getElementById('wheel-r').appendChild(dharmaWheel(22));
+
+// ─── Populate: Hero ───────────────────────────────────────────────────────────
+document.getElementById('hero-flower').appendChild(flowerOfLife(520));
+document.getElementById('hero-skull').appendChild(skullFrontal(320));
+
+// ─── Populate: skull glyph in Disciplinas ─────────────────────────────────────
+document.getElementById('skull-glyph').appendChild(skullGlyph(20));
+
+// ─── Populate: Sobre skull ────────────────────────────────────────────────────
+document.getElementById('sobre-skull').appendChild(skullFrontal(260, '#7a1018', 1.2));
+
+// ─── Populate: Booking skull ──────────────────────────────────────────────────
+document.getElementById('booking-skull').appendChild(skullGlyph(32));
+
+// ─── Marquee ──────────────────────────────────────────────────────────────────
+const WORDS = [
+  'Memento Mori','— • —','Devoción','— • —','Linework','— • —','Blackwork',
+  '— • —','Sacred Geometry','— • —','Memento Mori','— • —','Devoción',
+  '— • —','Linework','— • —','Blackwork','— • —','Memento Mori','— • —','Sacred Geometry',
+];
+const track = document.getElementById('marquee');
+[...WORDS, ...WORDS].forEach(w => {
+  const s = document.createElement('span');
+  s.textContent = w;
+  track.appendChild(s);
+});
+
+// ─── Services ─────────────────────────────────────────────────────────────────
+const SERVICES = [
+  { roman: 'I.',   es: 'Blackwork',         en: 'Black tradition', desc: 'Tinta sólida, contraste absoluto. La forma como ofrenda. Sesiones de 4–8 horas.',                        price: '$3.800/h', unit: 'MXN · Por hora' },
+  { roman: 'II.',  es: 'Linework fino',      en: 'Fine line',       desc: 'La línea como rezo: continua, sin temblor. Ideal para piezas íntimas y simbólicas.',                     price: '$3.200/h', unit: 'MXN · Por hora' },
+  { roman: 'III.', es: 'Dotwork',            en: 'Stippling',       desc: 'Mil puntos hacen un universo. Texturas, sombras y geometría sagrada.',                                   price: '$3.500/h', unit: 'MXN · Por hora' },
+  { roman: 'IV.',  es: 'Geometría sagrada',  en: 'Sacred geometry', desc: 'Mandala, sri yantra, flor de la vida. Construcción matemática y compasiva.',                             price: '$4.200/h', unit: 'MXN · Por hora' },
+  { roman: 'V.',   es: 'Cobertura ritual',   en: 'Ritual cover-up', desc: 'Transformar una marca antigua en una nueva narrativa. Consulta presencial requerida.',                   price: 'Cotización', unit: 'MXN · Por proyecto' },
+];
+
+const serviceContainer = document.getElementById('services');
+SERVICES.forEach(svc => {
+  const row = document.createElement('div');
+  row.className = 'service-row reveal';
+
+  const romanEl = document.createElement('div');
+  romanEl.className = 'svc-roman';
+  romanEl.textContent = svc.roman;
+
+  const nameWrap = document.createElement('div');
+  const nameEl = document.createElement('div');
+  nameEl.className = 'svc-name';
+  nameEl.textContent = svc.es;
+  const enEl = document.createElement('div');
+  enEl.className = 'svc-en';
+  enEl.textContent = svc.en;
+  nameWrap.appendChild(nameEl);
+  nameWrap.appendChild(enEl);
+
+  const descEl = document.createElement('div');
+  descEl.className = 'svc-desc';
+  descEl.textContent = svc.desc;
+
+  const priceWrap = document.createElement('div');
+  priceWrap.className = 'svc-price';
+  const priceEl = document.createElement('div');
+  priceEl.className = 'svc-price-val';
+  priceEl.textContent = svc.price;
+  const unitEl = document.createElement('span');
+  unitEl.className = 'small-cap';
+  unitEl.style.display = 'block';
+  unitEl.style.marginTop = '6px';
+  unitEl.textContent = svc.unit;
+  priceWrap.appendChild(priceEl);
+  priceWrap.appendChild(unitEl);
+
+  row.appendChild(romanEl);
+  row.appendChild(nameWrap);
+  row.appendChild(descEl);
+  row.appendChild(priceWrap);
+  serviceContainer.appendChild(row);
+});
+
+// ─── Gallery ──────────────────────────────────────────────────────────────────
+const GALLERY = [
+  { t: 'Memento I',       s: 'Blackwork · Espalda',    h: 480, glyph: 'skull' },
+  { t: 'Flor de Loto',    s: 'Linework · Antebrazo',   h: 360, glyph: 'lotus' },
+  { t: 'Sri Yantra',      s: 'Sacred · Pecho',         h: 420, glyph: 'mandala' },
+  { t: 'Cráneo III',      s: 'Dotwork · Pierna',       h: 380, glyph: 'skull' },
+  { t: 'Serpiente',       s: 'Linework · Costilla',    h: 340, glyph: 'serpent' },
+  { t: 'Ojo del Dharma',  s: 'Geometría · Nuca',       h: 460, glyph: 'eye' },
+  { t: 'Manos Rezando',   s: 'Blackwork · Brazo',      h: 400, glyph: 'mandala' },
+  { t: 'Memento II',      s: 'Dotwork · Pantorrilla',  h: 440, glyph: 'skull' },
+];
+
+const glyphMap = {
+  skull:   () => skullFrontal(140, '#e8e3d8', 1.1),
+  mandala: () => mandala(180),
+  lotus:   () => flowerOfLife(180, '#e8e3d8', 0.4),
+  eye:     () => eyeOfDharma(140),
+  serpent: () => serpent(180, 60),
+};
+
+const galleryContainer = document.getElementById('gallery');
+GALLERY.forEach((p, i) => {
+  const cell = document.createElement('div');
+  cell.className = 'gallery-cell reveal';
+  cell.style.height = p.h + 'px';
+
+  cell.appendChild(glyphMap[p.glyph]());
+
+  const num = document.createElement('div');
+  num.className = 'gallery-num';
+  num.textContent = 'N° ' + String(i + 1).padStart(3, '0');
+  cell.appendChild(num);
+
+  const meta = document.createElement('div');
+  meta.className = 'gallery-meta';
+  const title = document.createElement('div');
+  title.className = 'gallery-title';
+  title.textContent = p.t;
+  const sub = document.createElement('span');
+  sub.className = 'small-cap';
+  sub.style.display = 'block';
+  sub.style.marginTop = '4px';
+  sub.style.color = 'var(--bone-dim)';
+  sub.textContent = p.s;
+  meta.appendChild(title);
+  meta.appendChild(sub);
+  cell.appendChild(meta);
+
+  galleryContainer.appendChild(cell);
+});
+
+// ─── Process steps ────────────────────────────────────────────────────────────
+const STEPS = [
+  { n: 'I.',   es: 'La carta',     en: 'Letter',       d: 'Cuéntanos qué quieres y por qué. Referencias, ubicación, dimensiones. Mientras más nos cuentes, mejor te entendemos.' },
+  { n: 'II.',  es: 'La consulta',  en: 'Consultation', d: 'Te invitamos al estudio. Café, plumas, papel de calca. Una hora para diseñar el primer trazo. Sin compromiso.' },
+  { n: 'III.', es: 'El boceto',    en: 'Sketch',       d: 'Tu artista trabaja el diseño durante 2–4 semanas. Revisas, ajustas, esperas. La obra requiere paciencia.' },
+  { n: 'IV.',  es: 'La sesión',    en: 'Session',      d: 'Llegas en ayuno ligero, con ropa cómoda. Trabajamos hasta que la pieza esté lista. Sin reloj.' },
+];
+
+const stepsContainer = document.getElementById('steps');
+STEPS.forEach(step => {
+  const row = document.createElement('div');
+  row.className = 'process-step reveal';
+
+  const nEl = document.createElement('div');
+  nEl.className = 'step-n';
+  nEl.textContent = step.n;
+
+  const titleWrap = document.createElement('div');
+  const t = document.createElement('div');
+  t.className = 'step-title';
+  t.textContent = step.es;
+  const e = document.createElement('div');
+  e.className = 'step-en';
+  e.textContent = step.en;
+  titleWrap.appendChild(t);
+  titleWrap.appendChild(e);
+
+  const d = document.createElement('div');
+  d.className = 'step-desc';
+  d.textContent = step.d;
+
+  row.appendChild(nEl);
+  row.appendChild(titleWrap);
+  row.appendChild(d);
+  stepsContainer.appendChild(row);
+});
+
+// ─── Diario ───────────────────────────────────────────────────────────────────
+const ARTICLES = [
+  {
+    hero: true, cat: 'Oficio', date: '12 · Abril · 2026',
+    title: 'Sobre la línea que no tiembla',
+    body: 'En la disciplina del linework fino, el temblor no es un error técnico — es un síntoma del alma. Hablamos con Lucía sobre los doce años que tomó dejar de tener miedo a la aguja.',
+    glyph: () => skullAnatomical(280),
+  },
+  {
+    hero: false, cat: 'Iconografía', date: '28 · Marzo · 2026',
+    title: 'Memento Mori: el cráneo en la iconografía mexicana',
+    body: 'Un breve recorrido visual desde José Guadalupe Posada hasta hoy.',
+    glyph: () => skullFrontal(120, '#e8e3d8', 1),
+  },
+  {
+    hero: false, cat: 'Ensayo', date: '14 · Marzo · 2026',
+    title: 'La geometría sagrada no es decoración',
+    body: 'Por qué el Sri Yantra requiere matemática, no inspiración.',
+    glyph: () => mandala(140),
+  },
+];
+
+const diarioGrid = document.getElementById('diario-grid');
+ARTICLES.forEach(article => {
+  const art = document.createElement('article');
+  art.className = 'article ' + (article.hero ? 'article-hero' : 'article-small');
+
+  const thumb = document.createElement('div');
+  thumb.className = 'article-thumb';
+  thumb.appendChild(article.glyph());
+  art.appendChild(thumb);
+
+  const meta = document.createElement('div');
+  meta.className = 'article-meta';
+  const cat = document.createElement('span');
+  cat.className = 'small-cap article-cat';
+  cat.textContent = article.cat;
+  const date = document.createElement('span');
+  date.className = 'small-cap';
+  date.textContent = article.date;
+  meta.appendChild(cat);
+  meta.appendChild(date);
+  art.appendChild(meta);
+
+  const h = document.createElement('h3');
+  h.className = 'article-h';
+  h.textContent = article.title;
+  art.appendChild(h);
+
+  const p = document.createElement('p');
+  p.className = 'article-body';
+  p.textContent = article.body;
+  art.appendChild(p);
+
+  const link = document.createElement('a');
+  link.className = 'article-read';
+  link.href = '#';
+  link.textContent = 'Leer →';
+  art.appendChild(link);
+
+  diarioGrid.appendChild(art);
+});
+
+// ─── Custom cursor ────────────────────────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+let mx = -100, my = -100, cx = -100, cy = -100;
+
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
+document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
+
+document.querySelectorAll('a, button, .gallery-cell').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+(function loop() {
+  cx += (mx - cx) * 0.12;
+  cy += (my - cy) * 0.12;
+  cursor.style.left = cx + 'px';
+  cursor.style.top  = cy + 'px';
+  requestAnimationFrame(loop);
+})();
+
+// ─── Scroll reveal ────────────────────────────────────────────────────────────
+const io = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      io.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach((el, i) => {
+  el.style.transitionDelay = (i % 5 * 80) + 'ms';
+  io.observe(el);
+});
+</script>
+</body>
+</html>
