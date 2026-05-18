@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blackwork — Dharma Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bone:#e8e3d8; --bone-dim:#a8a195; --ink:#0a0908; --ink2:#15120f;
+  --blood:#7a1018; --blood-glow:#a8252e; --rule:rgba(232,227,216,0.18);
+  --serif:'Cormorant Garamond','EB Garamond',Didot,'Times New Roman',serif;
+  --mono:'JetBrains Mono','Courier New',monospace;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+html { scroll-behavior: smooth; }
+body { background:var(--ink); color:var(--bone); font-family:var(--sans); cursor:none; overflow-x:hidden; }
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:1000; opacity:.45; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.92  0 0 0 0 0.89  0 0 0 0 0.82  0 0 0 0.14 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+#cursor { position:fixed; top:0; left:0; width:28px; height:28px; border-radius:50%; border:1px solid var(--blood); pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:width .15s,height .15s,border-color .15s,opacity .2s; mix-blend-mode:difference; }
+#cursor::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:4px; height:4px; border-radius:50%; background:var(--blood); }
+#cursor.hidden { opacity:0; } #cursor.hover { width:44px; height:44px; border-color:var(--bone); }
+.small-cap { font-family:var(--sans); font-size:10px; letter-spacing:.32em; text-transform:uppercase; font-weight:500; color:var(--bone-dim); }
+a, button { cursor:none; }
+
+/* NAV */
+nav { position:sticky; top:0; z-index:100; padding:28px 60px; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; border-bottom:1px solid var(--rule); background:rgba(10,9,8,.92); backdrop-filter:blur(12px); }
+.nav-links { display:flex; gap:28px; list-style:none; }
+.nav-links a { font-family:var(--sans); font-size:10px; letter-spacing:.32em; text-transform:uppercase; font-weight:500; color:var(--bone-dim); text-decoration:none; transition:color .2s; }
+.nav-links a:hover { color:var(--bone); }
+.nav-links .cta { color:var(--blood) !important; }
+.nav-brand { display:flex; align-items:center; gap:12px; font-family:var(--serif); font-size:26px; letter-spacing:.18em; font-weight:500; text-decoration:none; color:var(--bone); }
+.nav-right { justify-content:flex-end; }
+#menu-btn { display:none; flex-direction:column; justify-content:center; gap:5px; width:36px; height:36px; background:transparent; border:none; padding:4px; }
+#menu-btn span { display:block; height:1px; width:100%; background:var(--bone); transition:transform .3s,opacity .3s; transform-origin:center; }
+#menu-btn.active span:nth-child(1) { transform:translateY(6px) rotate(45deg); }
+#menu-btn.active span:nth-child(2) { opacity:0; }
+#menu-btn.active span:nth-child(3) { transform:translateY(-6px) rotate(-45deg); }
+#mobile-menu { display:none; position:fixed; inset:0; top:68px; background:rgba(10,9,8,.97); backdrop-filter:blur(16px); z-index:90; flex-direction:column; align-items:center; justify-content:center; gap:40px; opacity:0; pointer-events:none; transition:opacity .3s; }
+#mobile-menu.open { opacity:1; pointer-events:all; }
+#mobile-menu a { font-family:var(--serif); font-size:44px; color:var(--bone); text-decoration:none; transition:color .2s; }
+#mobile-menu a:hover, #mobile-menu a.cta { color:var(--blood); }
+
+/* SERVICE HERO */
+.svc-hero {
+  padding:100px 60px 80px; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center;
+  border-bottom:1px solid var(--rule);
+}
+.svc-numeral { font-family:var(--serif); font-size:320px; font-style:italic; color:var(--blood); line-height:1; opacity:.1; position:absolute; right:-20px; top:-40px; pointer-events:none; user-select:none; }
+.svc-header { position:relative; }
+.svc-title { font-family:var(--serif); font-size:clamp(72px,8vw,128px); line-height:.95; font-weight:400; margin-top:24px; }
+.svc-title em { color:var(--blood); }
+.svc-tagline { font-family:var(--serif); font-style:italic; font-size:22px; color:var(--bone-dim); margin-top:28px; max-width:480px; line-height:1.5; }
+.svc-price-block { margin-top:48px; display:flex; gap:48px; align-items:baseline; }
+.svc-price { font-family:var(--serif); font-size:56px; color:var(--blood); }
+.svc-unit  { font-family:var(--sans); font-size:10px; letter-spacing:.32em; text-transform:uppercase; color:var(--bone-dim); }
+.svc-ctas { margin-top:40px; display:flex; gap:16px; }
+
+.btn-blood { font-family:var(--sans); font-size:11px; letter-spacing:.3em; text-transform:uppercase; background:var(--blood); color:var(--bone); border:none; padding:20px 36px; font-weight:600; transition:background .25s; text-decoration:none; display:inline-block; }
+.btn-blood:hover { background:var(--blood-glow); }
+.btn-ghost { font-family:var(--sans); font-size:11px; letter-spacing:.3em; text-transform:uppercase; background:transparent; color:var(--bone); border:1px solid var(--bone); padding:20px 36px; font-weight:500; transition:background .25s,color .25s; text-decoration:none; display:inline-block; }
+.btn-ghost:hover { background:var(--bone); color:var(--ink); }
+
+.svc-thumb { background:var(--ink2); aspect-ratio:1/1; border:1px solid var(--rule); display:flex; align-items:center; justify-content:center; position:relative; }
+.thumb-tag { position:absolute; bottom:20px; right:20px; font-family:var(--mono); font-size:10px; color:var(--bone-dim); letter-spacing:1px; }
+
+/* WHAT IS */
+.what-is { padding:100px 60px; border-bottom:1px solid var(--rule); display:grid; grid-template-columns:1fr 480px; gap:80px; }
+.what-h { font-family:var(--serif); font-size:clamp(44px,5vw,72px); line-height:1.05; font-weight:400; }
+.what-h em { color:var(--blood); }
+.what-body { font-family:var(--serif); font-size:17px; line-height:1.75; color:var(--bone-dim); }
+.what-body p+p { margin-top:1.2em; }
+
+/* PROCESS */
+.process { padding:100px 60px; border-bottom:1px solid var(--rule); background:var(--ink2); }
+.process-h { font-family:var(--serif); font-size:clamp(44px,5vw,72px); line-height:1; font-weight:400; margin-bottom:60px; }
+.process-h em { color:var(--blood); }
+.process-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--rule); }
+.process-step { background:var(--ink2); padding:48px 32px; }
+.step-n { font-family:var(--serif); font-style:italic; font-size:48px; color:var(--blood); line-height:1; }
+.step-title { font-family:var(--serif); font-size:28px; margin-top:16px; }
+.step-body { font-family:var(--serif); font-size:14px; line-height:1.6; color:var(--bone-dim); margin-top:12px; font-style:italic; }
+
+/* GALLERY */
+.svc-gallery { padding:100px 60px; border-bottom:1px solid var(--rule); }
+.gallery-h2 { font-family:var(--serif); font-size:clamp(44px,5vw,72px); line-height:1; font-weight:400; margin-bottom:48px; }
+.gallery-h2 em { color:var(--blood); }
+.gallery-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; }
+.gallery-cell { background:var(--ink2); position:relative; display:flex; align-items:center; justify-content:center; border:1px solid var(--rule); overflow:hidden; transition:background .3s; }
+.gallery-cell:hover { background:#1a1510; }
+.gallery-num { position:absolute; top:16px; right:16px; font-family:var(--mono); font-size:10px; color:var(--bone-dim); letter-spacing:1px; }
+.gallery-meta { position:absolute; bottom:16px; left:16px; right:16px; }
+.gallery-title { font-family:var(--serif); font-size:18px; }
+
+/* BOOKING PROMPT */
+.booking-prompt {
+  padding:120px 60px; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:32px;
+}
+.booking-h { font-family:var(--serif); font-size:clamp(52px,6vw,96px); line-height:1; font-weight:400; }
+.booking-h em { color:var(--blood); }
+.booking-note { font-family:var(--serif); font-style:italic; font-size:20px; color:var(--bone-dim); max-width:560px; }
+
+/* OTHER SERVICES */
+.other-svc { padding:80px 60px; border-top:1px solid var(--rule); }
+.other-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-top:40px; }
+.other-card { padding:32px 28px; border:1px solid var(--rule); text-decoration:none; color:inherit; transition:background .2s; }
+.other-card:hover { background:rgba(232,227,216,.03); }
+.other-roman { font-family:var(--serif); font-style:italic; font-size:28px; color:var(--blood); }
+.other-name  { font-family:var(--serif); font-size:28px; margin-top:8px; }
+.other-price { font-family:var(--serif); font-size:16px; color:var(--bone-dim); margin-top:8px; }
+
+/* FOOTER */
+footer { padding:60px; border-top:1px solid var(--rule); background:#050405; display:flex; justify-content:space-between; align-items:center; }
+.footer-word { font-family:var(--serif); font-size:48px; font-weight:400; letter-spacing:-.03em; }
+.footer-word em { color:var(--blood); }
+
+/* REVEAL */
+.reveal { opacity:0; transform:translateY(24px); transition:opacity .8s ease,transform .8s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+@media (max-width:900px) {
+  nav { padding:16px 24px; }
+  .nav-links { display:none; }
+  #menu-btn { display:flex; }
+  #mobile-menu { display:flex; }
+  .svc-hero, .what-is { grid-template-columns:1fr; padding:60px 24px; gap:40px; }
+  .process { padding:60px 24px; }
+  .process-steps { grid-template-columns:1fr 1fr; }
+  .svc-gallery, .booking-prompt, .other-svc { padding:60px 24px; }
+  .gallery-grid { grid-template-columns:repeat(2,1fr); }
+  .other-grid { grid-template-columns:1fr 1fr; }
+  footer { padding:40px 24px; flex-direction:column; gap:16px; }
+}
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+
+<nav>
+  <ul class="nav-links">
+    <li><a href="/#manifesto">Casa</a></li>
+    <li><a href="/#galeria">Obra</a></li>
+    <li><a href="/#disciplinas">Disciplinas</a></li>
+    <li><a href="/#diario">Diario</a></li>
+  </ul>
+  <a class="nav-brand" href="/"><span id="wheel-l"></span>DHARMA<span id="wheel-r"></span></a>
+  <ul class="nav-links nav-right">
+    <li><a href="/#sobre">Manifiesto</a></li>
+    <li><a href="/#contacto">Contacto</a></li>
+    <li><a href="/#reservas" class="cta">Reservar ↗</a></li>
+    <li><button id="menu-btn" aria-label="Menú" aria-expanded="false"><span></span><span></span><span></span></button></li>
+  </ul>
+</nav>
+<div id="mobile-menu" role="dialog">
+  <a href="/#manifesto">Casa</a><a href="/#galeria">Obra</a>
+  <a href="/#disciplinas">Disciplinas</a><a href="/#diario">Diario</a>
+  <a href="/#reservas" class="cta">Reservar ↗</a>
+</div>
+
+<!-- HERO -->
+<section class="svc-hero">
+  <div class="svc-header reveal">
+    <div class="svc-numeral">I.</div>
+    <span class="small-cap" style="color:var(--blood)">§ I · Disciplina</span>
+    <h1 class="svc-title">Black<em>work.</em></h1>
+    <p class="svc-tagline">Tinta sólida, contraste absoluto. La forma como ofrenda — sin gradientes, sin trucos. Solo la intención y el negro.</p>
+    <div class="svc-price-block">
+      <div class="svc-price">$3.800</div>
+      <span class="svc-unit">MXN / hora</span>
+    </div>
+    <div class="svc-ctas">
+      <a class="btn-blood" href="/#reservas">Reservar consulta ↗</a>
+      <a class="btn-ghost" href="/#disciplinas">Otras disciplinas</a>
+    </div>
+  </div>
+  <div class="svc-thumb reveal">
+    <span id="hero-skull"></span>
+    <span class="thumb-tag">FIG. I · BLACKWORK</span>
+  </div>
+</section>
+
+<!-- WHAT IS -->
+<section class="what-is">
+  <div class="reveal">
+    <span class="small-cap" style="color:var(--blood);display:block;margin-bottom:16px">§ I.I · Sobre la disciplina</span>
+    <h2 class="what-h">La <em>forma</em> como única verdad.</h2>
+  </div>
+  <div class="what-body reveal">
+    <p>El blackwork es la disciplina más antigua del tatuaje occidental. Su premisa es simple y exigente: solo existe lo que es negro. No hay gradiente, no hay sombreado suave, no hay trampa. La forma es el argumento completo.</p>
+    <p>En manos equivocadas es un estilo brutalmente expuesto — cada imprecisión queda inmortalizada en contraste máximo. En manos disciplinadas se convierte en el lenguaje más honesto que existe para marcar la piel.</p>
+    <p>Trabajamos en piezas grandes (espalda completa, manga, pecho) y en elementos aislados de alto contraste. La consulta previa define el alcance y la viabilidad anatómica de cada diseño.</p>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process">
+  <h2 class="process-h reveal">El <em>proceso.</em></h2>
+  <div class="process-steps">
+    <div class="process-step reveal">
+      <div class="step-n">I.</div>
+      <div class="step-title">Carta inicial</div>
+      <div class="step-body">Escríbenos con referencias visuales y una descripción del concepto. Sin imágenes generadas por IA — preferimos fuentes: grabados, fotografía, ilustración histórica.</div>
+    </div>
+    <div class="process-step reveal">
+      <div class="step-n">II.</div>
+      <div class="step-title">Consulta</div>
+      <div class="step-body">Una hora en el estudio para revisar viabilidad anatómica, definir dimensiones y hablar del concepto. Sin compromiso ni costo.</div>
+    </div>
+    <div class="process-step reveal">
+      <div class="step-n">III.</div>
+      <div class="step-title">Boceto</div>
+      <div class="step-body">2 a 4 semanas de trabajo. Una revisión incluida. El diseño final se valida en la piel (papel calca) antes de iniciar.</div>
+    </div>
+    <div class="process-step reveal">
+      <div class="step-n">IV.</div>
+      <div class="step-title">Sesión</div>
+      <div class="step-body">Sesiones de 4 a 8 horas con pausas. Piezas grandes se dividen en sesiones múltiples. El resto es paciencia, ayuno ligero, y confianza en la línea.</div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="svc-gallery">
+  <h2 class="gallery-h2 reveal">Obra en <em>blackwork.</em></h2>
+  <div class="gallery-grid" id="gallery"></div>
+</section>
+
+<!-- BOOKING -->
+<section class="booking-prompt">
+  <div id="booking-glyph" class="reveal"></div>
+  <h2 class="booking-h reveal">¿Lista para <em>reservar?</em></h2>
+  <p class="booking-note reveal">Lista de espera actual: 6–8 semanas. La consulta no tiene costo.</p>
+  <a class="btn-blood reveal" href="/#reservas" style="font-size:13px">Enviar carta de intención ↗</a>
+</section>
+
+<!-- OTHER SERVICES -->
+<section class="other-svc">
+  <span class="small-cap" style="color:var(--blood)">Otras disciplinas</span>
+  <div class="other-grid">
+    <a class="other-card reveal" href="/servicios/linework-fino.html">
+      <div class="other-roman">II.</div>
+      <div class="other-name">Linework fino</div>
+      <div class="other-price">$3.200/h</div>
+    </a>
+    <a class="other-card reveal" href="#">
+      <div class="other-roman">III.</div>
+      <div class="other-name">Dotwork</div>
+      <div class="other-price">$3.500/h</div>
+    </a>
+    <a class="other-card reveal" href="#">
+      <div class="other-roman">IV.</div>
+      <div class="other-name">Geometría sagrada</div>
+      <div class="other-price">$4.200/h</div>
+    </a>
+    <a class="other-card reveal" href="#">
+      <div class="other-roman">V.</div>
+      <div class="other-name">Cobertura ritual</div>
+      <div class="other-price">Cotización</div>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="/" style="text-decoration:none;color:inherit"><div class="footer-word">D<em>harm</em>a</div></a>
+  <div style="text-align:right">
+    <span class="small-cap" style="display:block;margin-bottom:8px;color:var(--bone-dim)">Disciplina · I</span>
+    <a href="/#disciplinas" style="font-family:var(--serif);font-size:15px;color:var(--bone);text-decoration:none">← Todas las disciplinas</a>
+  </div>
+</footer>
+
+<script src="/js/main.js"></script>
+<script>
+'use strict';
+const { dharmaWheel, skullFrontal, skullGlyph, flowerOfLife, mandala, initCursor, initReveal, initMobileMenu } = window.DS;
+
+document.getElementById('wheel-l').appendChild(dharmaWheel(22));
+document.getElementById('wheel-r').appendChild(dharmaWheel(22));
+document.getElementById('hero-skull').appendChild(skullFrontal(280, '#e8e3d8', 1.2));
+document.getElementById('booking-glyph').appendChild(skullGlyph(36));
+
+const WORKS = [
+  { t:'Manto',       s:'Espalda · 2026',    h:440 },
+  { t:'Arquitectura',s:'Pecho · 2025',      h:360 },
+  { t:'Raíz',        s:'Muslo · 2025',      h:400 },
+  { t:'Bestia',      s:'Manga · 2024',      h:480 },
+  { t:'Vacío I',     s:'Antebrazo · 2024',  h:320 },
+  { t:'Vacío II',    s:'Pantorrilla · 2023',h:380 },
+  { t:'Ofrenda',     s:'Costado · 2023',    h:420 },
+  { t:'Cráneo IV',   s:'Nuca · 2023',       h:360 },
+];
+const glyphFns = [
+  () => skullFrontal(120,'#e8e3d8',1.1),
+  () => flowerOfLife(140,'#e8e3d8',0.4),
+  () => skullFrontal(100,'#e8e3d8',1),
+  () => mandala(140),
+  () => skullFrontal(80,'#e8e3d8',1),
+  () => flowerOfLife(120,'#e8e3d8',0.4),
+  () => mandala(120),
+  () => skullFrontal(120,'#7a1018',1.2),
+];
+const grid = document.getElementById('gallery');
+WORKS.forEach((w,i) => {
+  const cell = document.createElement('div');
+  cell.className = 'gallery-cell reveal';
+  cell.style.height = w.h + 'px';
+  cell.appendChild(glyphFns[i]());
+  const num = document.createElement('div'); num.className = 'gallery-num'; num.textContent = 'N° ' + String(i+1).padStart(3,'0');
+  cell.appendChild(num);
+  const meta = document.createElement('div'); meta.className = 'gallery-meta';
+  const t = document.createElement('div'); t.className = 'gallery-title'; t.textContent = w.t;
+  const s = document.createElement('span'); s.className = 'small-cap'; s.style.cssText = 'display:block;margin-top:4px;color:var(--bone-dim)'; s.textContent = w.s;
+  meta.appendChild(t); meta.appendChild(s); cell.appendChild(meta);
+  grid.appendChild(cell);
+});
+
+initCursor();
+initReveal();
+initMobileMenu();
+</script>
+</body>
+</html>

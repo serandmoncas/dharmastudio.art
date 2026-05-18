@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sobre la línea que no tiembla — Dharma Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bone: #e8e3d8; --bone-dim: #a8a195; --ink: #0a0908; --ink2: #15120f;
+  --blood: #7a1018; --blood-glow: #a8252e; --rule: rgba(232,227,216,0.18);
+  --serif: 'Cormorant Garamond','EB Garamond',Didot,'Times New Roman',serif;
+  --mono: 'JetBrains Mono','Courier New',monospace;
+  --sans: 'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--ink); color: var(--bone); font-family: var(--sans); cursor: none; overflow-x: hidden; }
+
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+  opacity: 0.45; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.92  0 0 0 0 0.89  0 0 0 0 0.82  0 0 0 0.14 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+#cursor {
+  position: fixed; top: 0; left: 0; width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid var(--blood); pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%); transition: width .15s,height .15s,border-color .15s,opacity .2s;
+  mix-blend-mode: difference;
+}
+#cursor::after {
+  content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 4px; height: 4px; border-radius: 50%; background: var(--blood);
+}
+#cursor.hidden { opacity: 0; }
+#cursor.hover  { width: 44px; height: 44px; border-color: var(--bone); }
+
+.small-cap { font-family: var(--sans); font-size: 10px; letter-spacing: .32em; text-transform: uppercase; font-weight: 500; color: var(--bone-dim); }
+a, button { cursor: none; }
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100; padding: 28px 60px;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  border-bottom: 1px solid var(--rule); background: rgba(10,9,8,.92); backdrop-filter: blur(12px);
+}
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a { font-family: var(--sans); font-size: 10px; letter-spacing: .32em; text-transform: uppercase; font-weight: 500; color: var(--bone-dim); text-decoration: none; transition: color .2s; }
+.nav-links a:hover { color: var(--bone); }
+.nav-links .cta { color: var(--blood) !important; }
+.nav-brand { display: flex; align-items: center; gap: 12px; font-family: var(--serif); font-size: 26px; letter-spacing: .18em; font-weight: 500; text-decoration: none; color: var(--bone); }
+.nav-right  { justify-content: flex-end; }
+
+/* Mobile menu */
+#menu-btn {
+  display: none; flex-direction: column; justify-content: center; gap: 5px;
+  width: 36px; height: 36px; background: transparent; border: none; padding: 4px;
+}
+#menu-btn span { display: block; height: 1px; width: 100%; background: var(--bone); transition: transform .3s, opacity .3s; transform-origin: center; }
+#menu-btn.active span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+#menu-btn.active span:nth-child(2) { opacity: 0; }
+#menu-btn.active span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+#mobile-menu {
+  display: none; position: fixed; inset: 0; top: 68px; background: rgba(10,9,8,.97);
+  backdrop-filter: blur(16px); z-index: 90; flex-direction: column; align-items: center;
+  justify-content: center; gap: 40px; opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+#mobile-menu.open { opacity: 1; pointer-events: all; }
+#mobile-menu a { font-family: var(--serif); font-size: 44px; color: var(--bone); text-decoration: none; transition: color .2s; }
+#mobile-menu a:hover, #mobile-menu a.cta { color: var(--blood); }
+
+/* ARTICLE HERO */
+.article-hero {
+  padding: 100px 60px 80px;
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 400px; gap: 80px; align-items: end;
+}
+.article-eyebrow { margin-bottom: 24px; display: flex; gap: 32px; align-items: center; }
+.article-title {
+  font-family: var(--serif); font-size: clamp(52px,6vw,96px);
+  line-height: 1.0; font-weight: 400;
+}
+.article-title em { color: var(--blood); }
+.article-meta-block { margin-top: 40px; display: grid; gap: 16px; }
+.article-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.meta-val { font-family: var(--serif); font-size: 18px; }
+
+.article-hero-thumb {
+  background: var(--ink2); aspect-ratio: 3/4; border: 1px solid var(--rule);
+  display: flex; align-items: center; justify-content: center; position: relative;
+}
+.thumb-label {
+  position: absolute; bottom: 16px; right: 16px;
+  font-family: var(--mono); font-size: 10px; color: var(--bone-dim); letter-spacing: 1px;
+}
+
+/* ARTICLE BODY */
+.article-body-wrap {
+  max-width: 760px; margin: 0 auto; padding: 80px 60px 120px;
+}
+.drop-cap::first-letter {
+  font-family: var(--serif); font-size: 96px; line-height: 0.75;
+  float: left; margin-right: 12px; margin-top: 8px; color: var(--blood);
+}
+.body-text {
+  font-family: var(--serif); font-size: 21px; line-height: 1.75; color: var(--bone-dim);
+}
+.body-text p { margin-top: 1.5em; }
+.body-text p:first-child { margin-top: 0; }
+
+.pull-quote {
+  border-left: 1px solid var(--blood); padding-left: 32px; margin: 56px 0;
+  font-family: var(--serif); font-size: 36px; line-height: 1.2; font-style: italic; color: var(--bone);
+}
+
+.section-break {
+  display: flex; align-items: center; gap: 24px; margin: 56px 0;
+}
+.section-break hr { flex: 1; border: none; border-top: 1px solid var(--rule); }
+.section-break span { font-family: var(--mono); font-size: 10px; color: var(--blood); letter-spacing: 2px; }
+
+/* RELATED */
+.related { border-top: 1px solid var(--rule); padding: 80px 60px; }
+.related-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 40px; margin-top: 40px; }
+.related-card { border-top: 1px solid var(--rule); padding-top: 24px; text-decoration: none; color: inherit; transition: opacity .2s; display: block; }
+.related-card:hover { opacity: 0.7; }
+.related-thumb { background: var(--ink2); aspect-ratio: 16/9; margin-bottom: 20px; border: 1px solid var(--rule); display: flex; align-items: center; justify-content: center; }
+.related-title { font-family: var(--serif); font-size: 22px; line-height: 1.15; margin-top: 12px; }
+
+/* FOOTER (minimal) */
+footer {
+  padding: 60px; border-top: 1px solid var(--rule); background: #050405;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-word { font-family: var(--serif); font-size: 48px; font-weight: 400; letter-spacing: -.03em; }
+.footer-word em { color: var(--blood); }
+
+/* REVEAL */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 900px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  #menu-btn { display: flex; }
+  #mobile-menu { display: flex; }
+  .article-hero { grid-template-columns: 1fr; padding: 60px 24px 48px; gap: 40px; }
+  .article-hero-thumb { aspect-ratio: 16/9; }
+  .article-body-wrap { padding: 48px 24px 80px; }
+  .body-text { font-size: 18px; }
+  .related { padding: 60px 24px; }
+  .related-grid { grid-template-columns: 1fr; }
+  footer { padding: 40px 24px; flex-direction: column; gap: 16px; }
+}
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+
+<nav>
+  <ul class="nav-links">
+    <li><a href="/#manifesto">Casa</a></li>
+    <li><a href="/#galeria">Obra</a></li>
+    <li><a href="/#disciplinas">Disciplinas</a></li>
+    <li><a href="/#diario">Diario</a></li>
+  </ul>
+  <a class="nav-brand" href="/">
+    <span id="wheel-l"></span>DHARMA<span id="wheel-r"></span>
+  </a>
+  <ul class="nav-links nav-right">
+    <li><a href="/#sobre">Manifiesto</a></li>
+    <li><a href="/#contacto">Contacto</a></li>
+    <li><a href="/#reservas" class="cta">Reservar ↗</a></li>
+    <li><button id="menu-btn" aria-label="Menú" aria-expanded="false"><span></span><span></span><span></span></button></li>
+  </ul>
+</nav>
+
+<div id="mobile-menu" role="dialog">
+  <a href="/#manifesto">Casa</a>
+  <a href="/#galeria">Obra</a>
+  <a href="/#disciplinas">Disciplinas</a>
+  <a href="/#diario">Diario</a>
+  <a href="/#reservas" class="cta">Reservar ↗</a>
+</div>
+
+<!-- HERO ─────────────────────────────────────── -->
+<header class="article-hero">
+  <div class="reveal">
+    <div class="article-eyebrow">
+      <span class="small-cap" style="color:var(--blood)">Oficio</span>
+      <span class="small-cap">12 · Abril · 2026</span>
+    </div>
+    <h1 class="article-title">
+      Sobre la línea<br>que no <em>tiembla.</em>
+    </h1>
+    <div class="article-meta-block">
+      <div class="article-meta-item">
+        <span class="small-cap" style="color:var(--bone-dim)">Artista</span>
+        <a class="meta-val" href="/artistas/lucia-morales.html" style="color:var(--bone);text-decoration:none">Lucía Morales</a>
+      </div>
+      <div class="article-meta-item">
+        <span class="small-cap" style="color:var(--bone-dim)">Disciplina</span>
+        <span class="meta-val">Linework fino</span>
+      </div>
+      <div class="article-meta-item">
+        <span class="small-cap" style="color:var(--bone-dim)">Lectura</span>
+        <span class="meta-val">8 minutos</span>
+      </div>
+    </div>
+  </div>
+  <div class="article-hero-thumb reveal">
+    <span id="hero-skull"></span>
+    <span class="thumb-label">FIG. I · HERRAMIENTA</span>
+  </div>
+</header>
+
+<!-- BODY ─────────────────────────────────────── -->
+<main class="article-body-wrap">
+  <div class="body-text">
+    <p class="drop-cap">En doce años de práctica, Lucía Morales ha sostenido la aguja miles de veces. Conoce el peso exacto de la máquina, la resistencia específica de cada tipo de piel, la pausa que convierte una sesión en una ceremonia. Lo que no sabe es cuándo va a temblar.</p>
+
+    <p>"Al principio creía que el temblor era técnico", dice. Estamos sentados en su cuarto de trabajo, una habitación en la planta alta del estudio con luz de tarde entrando oblicua. "Que si tensaba más la mano iba a desaparecer. Tardé años en entender que era otra cosa."</p>
+
+    <div class="pull-quote reveal">
+      "El temblor no es un error. Es el cuerpo avisando que algo importa demasiado."
+    </div>
+
+    <p>El linework fino no perdona. A diferencia del blackwork —donde la tinta sólida puede absorber pequeñas imperfecciones— o del dotwork —donde los puntos individuales tienen margen de variación— el linework expone cada milímetro de decisión. Una línea continua es exactamente eso: la historia completa de tu mano, visible para siempre en la piel de alguien.</p>
+
+    <div class="section-break reveal">
+      <hr>
+      <span>§ II</span>
+      <hr>
+    </div>
+
+    <p>Lucía llegó al estudio en 2014, dos años antes de que Dharma abriera formalmente como espacio. Venía de una carrera interrumpida en diseño gráfico y de una práctica de yoga que la había llevado a explorar el budismo tibetano. El tatuaje, para ella, no era una profesión elegida: era una consecuencia.</p>
+
+    <p>"Siempre dibujé líneas", dice. "En papel, en pared, en lo que hubiera. El tatuaje fue el momento en que la línea encontró resistencia real. La piel no es papel. Tiene memoria, tiene grosor, tiene opinión."</p>
+
+    <p>En sus primeros tres años no aceptó piezas grandes. Trabajaba solo en manos, muñecas, tobillos: zonas pequeñas que le permitían practicar el control sin la presión de una pieza monumental. "Necesitaba aprender a escuchar la piel antes de hacer declaraciones sobre ella."</p>
+
+    <div class="section-break reveal">
+      <hr>
+      <span>§ III</span>
+      <hr>
+    </div>
+
+    <p>La pregunta que le hago es la que lleva años haciéndose a sí misma: ¿cuándo deja de temblar una mano?</p>
+
+    <p>Su respuesta es lenta, construida en voz alta. "No deja. O más bien: la mano que no tiembla nunca es la mano que no entiende lo que está haciendo. El temblor es señal de que sabes el peso de lo que estás tocando."</p>
+
+    <p>Lo que cambia con los años, dice, es la relación con ese temblor. Aprendes a no pelearte con él. A dejarlo existir sin que determine el resultado. "Es como meditar: no desaparecen los pensamientos. Aprendes a dejarlos pasar sin aferrarte."</p>
+
+    <div class="pull-quote reveal">
+      "La línea perfecta no existe. Existe la línea honesta."
+    </div>
+
+    <p>Cuando le pregunto cómo sabe cuando una pieza está terminada, sonríe. "Cuando ya no quiero agregarle nada. No cuando está llena — cuando está completa."</p>
+
+    <p>Hay una diferencia, insiste. Las piezas llenas se ven abrumadas. Las piezas completas tienen silencio adentro. "El espacio vacío en un tatuaje no es ausencia. Es parte del diseño."</p>
+
+    <div class="section-break reveal">
+      <hr>
+      <span>§ IV</span>
+      <hr>
+    </div>
+
+    <p>Al final de la conversación, Lucía me muestra su propio antebrazo izquierdo. Una línea única, horizontal, que cruza desde el interior de la muñeca hasta el codo. Sin inicio visible. Sin final marcado. Simplemente una línea que existe.</p>
+
+    <p>"Lo hice yo misma", dice. "Fue el examen más difícil. Tatuar tu propio cuerpo con tu mano no dominante. Con temblor y todo."</p>
+
+    <p>La línea no es perfecta. Tiene una ondulación mínima a la mitad, casi imperceptible. Pero está ahí, y seguirá estando. Una firma que es también una pregunta: ¿qué tan honesto eres capaz de ser?</p>
+  </div>
+</main>
+
+<!-- RELATED ──────────────────────────────────── -->
+<section class="related">
+  <span class="small-cap" style="color:var(--blood)">Continúa leyendo</span>
+  <div class="related-grid">
+    <a class="related-card reveal" href="#">
+      <div class="related-thumb"><span id="rel-1"></span></div>
+      <span class="small-cap" style="color:var(--blood)">Iconografía</span>
+      <div class="related-title">Memento Mori: el cráneo en la iconografía mexicana</div>
+    </a>
+    <a class="related-card reveal" href="#">
+      <div class="related-thumb"><span id="rel-2"></span></div>
+      <span class="small-cap" style="color:var(--blood)">Ensayo</span>
+      <div class="related-title">La geometría sagrada no es decoración</div>
+    </a>
+    <a class="related-card reveal" href="/artistas/lucia-morales.html">
+      <div class="related-thumb"><span id="rel-3"></span></div>
+      <span class="small-cap" style="color:var(--blood)">Artista</span>
+      <div class="related-title">Lucía Morales — Linework fino</div>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER ───────────────────────────────────── -->
+<footer>
+  <a href="/" style="text-decoration:none;color:inherit">
+    <div class="footer-word">D<em>harm</em>a</div>
+  </a>
+  <div style="text-align:right">
+    <span class="small-cap" style="display:block;margin-bottom:8px;color:var(--bone-dim)">Diario · Dharma Studio</span>
+    <a href="/#diario" style="font-family:var(--serif);font-size:15px;color:var(--bone);text-decoration:none">← Volver al diario</a>
+  </div>
+</footer>
+
+<script src="/js/main.js"></script>
+<script>
+'use strict';
+const { dharmaWheel, skullAnatomical, skullFrontal, mandala, initCursor, initReveal, initMobileMenu } = window.DS;
+
+document.getElementById('wheel-l').appendChild(dharmaWheel(22));
+document.getElementById('wheel-r').appendChild(dharmaWheel(22));
+document.getElementById('hero-skull').appendChild(skullAnatomical(260));
+document.getElementById('rel-1').appendChild(skullFrontal(80, '#e8e3d8', 1));
+document.getElementById('rel-2').appendChild(mandala(100));
+document.getElementById('rel-3').appendChild(skullFrontal(80, '#7a1018', 1));
+
+initCursor();
+initReveal();
+initMobileMenu();
+</script>
+</body>
+</html>

@@ -274,20 +274,96 @@ footer        { padding: 80px 60px 60px; border-top: 1px solid var(--rule); back
 .footer-bot   { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--rule); }
 
 /* ════════════════════════════════════════════════
+   HAMBURGER MENU
+════════════════════════════════════════════════ */
+#menu-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px; height: 36px;
+  background: transparent; border: none;
+  padding: 4px;
+  z-index: 200;
+}
+#menu-btn span {
+  display: block; height: 1px; width: 100%;
+  background: var(--bone);
+  transition: transform 0.3s, opacity 0.3s;
+  transform-origin: center;
+}
+#menu-btn.active span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+#menu-btn.active span:nth-child(2) { opacity: 0; }
+#menu-btn.active span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+#mobile-menu {
+  display: none;
+  position: fixed;
+  inset: 0; top: 68px;
+  background: rgba(10,9,8,0.97);
+  backdrop-filter: blur(16px);
+  z-index: 90;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+#mobile-menu.open {
+  opacity: 1;
+  pointer-events: all;
+}
+#mobile-menu a {
+  font-family: var(--serif);
+  font-size: 44px;
+  color: var(--bone);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+#mobile-menu a:hover, #mobile-menu a.cta { color: var(--blood); }
+
+/* ════════════════════════════════════════════════
    RESPONSIVE
 ════════════════════════════════════════════════ */
 @media (max-width: 900px) {
-  nav { padding: 20px 24px; }
+  nav { padding: 16px 24px; }
   .nav-links { display: none; }
-  .hero, .manifesto, .disciplinas, .galeria, .sobre, .reservas, .diario, .contacto-info { padding: 60px 24px; }
+  #menu-btn  { display: flex; }
+  #mobile-menu { display: flex; }
+
+  .hero { padding: 48px 24px 72px; }
+  .manifesto, .disciplinas, .galeria, .sobre, .reservas, .diario, .contacto-info { padding: 72px 24px; }
+
   .manifesto-grid  { grid-template-columns: 1fr; }
   .marginalia      { display: none; }
-  .service-row     { grid-template-columns: 60px 1fr; }
+
+  .service-row     { grid-template-columns: 48px 1fr; gap: 20px; }
   .svc-desc, .svc-price { display: none; }
+  .svc-name        { font-size: 28px; }
+
   .gallery-grid    { grid-template-columns: repeat(2,1fr); }
-  .galeria-intro, .sobre-grid, .reservas-grid, .diario-grid, .contacto { grid-template-columns: 1fr; }
-  .booking-card    { position: static; }
+  .galeria-intro   { grid-template-columns: 1fr; }
+  .galeria-note    { text-align: left; }
+
+  .sobre-grid      { grid-template-columns: 1fr; }
+  .sobre-portrait  { max-height: 380px; }
+
+  .reservas-grid   { grid-template-columns: 1fr; }
+  .process-step    { grid-template-columns: 40px 1fr; gap: 16px; }
+  .step-desc       { display: none; }
+  .booking-card    { position: static; margin-top: 48px; }
+
+  .diario-grid     { grid-template-columns: 1fr; }
+  .contacto        { grid-template-columns: 1fr; }
+  .mapa            { min-height: 320px; }
+
   .footer-cols     { grid-template-columns: repeat(2,1fr); }
+  .footer-word     { font-size: clamp(60px,18vw,120px); }
+  .footer-bot      { flex-direction: column; gap: 12px; align-items: center; text-align: center; }
+
+  .section-h { font-size: clamp(40px,10vw,72px); }
 }
 </style>
 </head>
@@ -313,8 +389,24 @@ footer        { padding: 80px 60px 60px; border-top: 1px solid var(--rule); back
     <li><a href="#sobre">Manifiesto</a></li>
     <li><a href="#contacto">Contacto</a></li>
     <li><a href="#reservas" class="cta">Reservar ↗</a></li>
+    <li style="list-style:none">
+      <button id="menu-btn" aria-label="Menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </li>
   </ul>
 </nav>
+
+<!-- MOBILE MENU ─────────────────────────────── -->
+<div id="mobile-menu" role="dialog" aria-label="Navegación">
+  <a href="#manifesto">Casa</a>
+  <a href="#galeria">Obra</a>
+  <a href="#disciplinas">Disciplinas</a>
+  <a href="#diario">Diario</a>
+  <a href="#sobre">Manifiesto</a>
+  <a href="#contacto">Contacto</a>
+  <a href="#reservas" class="cta">Reservar ↗</a>
+</div>
 
 <!-- HERO ────────────────────────────────────── -->
 <section class="hero">
@@ -986,37 +1078,42 @@ ARTICLES.forEach(article => {
 // ─── Custom cursor ────────────────────────────────────────────────────────────
 const cursor = document.getElementById('cursor');
 let mx = -100, my = -100, cx = -100, cy = -100;
-
 document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
 document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
 document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
-
-document.querySelectorAll('a, button, .gallery-cell').forEach(el => {
+document.querySelectorAll('a, button, .gallery-cell, .service-row').forEach(el => {
   el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
   el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
 });
-
 (function loop() {
-  cx += (mx - cx) * 0.12;
-  cy += (my - cy) * 0.12;
-  cursor.style.left = cx + 'px';
-  cursor.style.top  = cy + 'px';
+  cx += (mx - cx) * 0.12; cy += (my - cy) * 0.12;
+  cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px';
   requestAnimationFrame(loop);
 })();
 
 // ─── Scroll reveal ────────────────────────────────────────────────────────────
 const io = new IntersectionObserver(entries => {
   entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      io.unobserve(entry.target);
-    }
+    if (entry.isIntersecting) { entry.target.classList.add('visible'); io.unobserve(entry.target); }
   });
 }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-
 document.querySelectorAll('.reveal').forEach((el, i) => {
-  el.style.transitionDelay = (i % 5 * 80) + 'ms';
-  io.observe(el);
+  el.style.transitionDelay = (i % 5 * 80) + 'ms'; io.observe(el);
+});
+
+// ─── Mobile menu ─────────────────────────────────────────────────────────────
+const menuBtn    = document.getElementById('menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+menuBtn.addEventListener('click', () => {
+  const open = mobileMenu.classList.toggle('open');
+  menuBtn.classList.toggle('active', open);
+  menuBtn.setAttribute('aria-expanded', open);
+});
+mobileMenu.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => { mobileMenu.classList.remove('open'); menuBtn.classList.remove('active'); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { mobileMenu.classList.remove('open'); menuBtn.classList.remove('active'); }
 });
 </script>
 </body>
